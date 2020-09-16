@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.conf import settings
-
+from django.contrib.auth.models import User
 
 Status = (
     ('Draft', 'Draft'),
@@ -19,11 +18,9 @@ USER_ROLES = (
     ('Muted', 'Muted'),
 )
 
-# User
-
 
 class UserProfile(models.Model):
-    # user
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     name = models.CharField(max_length=50)
     bio = models.TextField(max_length=2000, blank=True, default='')
     avatar = models.ImageField(upload_to='media', null=True, blank=True)
