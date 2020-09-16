@@ -9,7 +9,7 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('api/main/', include('main.urls')),
     path('auth/', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken'))
+    path('auth/', include('djoser.urls.authtoken')),
 ]
 
 if settings.DEBUG:

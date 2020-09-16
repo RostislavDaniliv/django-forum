@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 
+
 Status = (
     ('Draft', 'Draft'),
     ('Published', 'Published'),
