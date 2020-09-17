@@ -33,9 +33,9 @@ class UserProfile(models.Model):
 
 class Topic(models.Model):
     title = models.CharField(max_length=2000)
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="topic_creator")
     content = models.TextField()
-    moderator = models.ForeignKey(User)
+    moderator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="topic_moderator")
     status = models.CharField(choices=Status, max_length=20)
     slug = models.SlugField(max_length=500)
 
@@ -44,10 +44,10 @@ class Topic(models.Model):
 
 
 class Comment(models.Model):
-    comment = models.TextField(null=True, blank=True)
-    commented_by = models.ForeignKey(User, related_name="commented_by")
-    topic = models.ForeignKey(Topic, related_name="topic_comments")
+    comment = models.TextField(default='', null=True, blank=True)
+    commented_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commented_by")
+    topic = models.ForeignKey(Topic, default='', on_delete=models.CASCADE, related_name="topic_comments")
 
-    # def __str__(self):
-    #     return self.comment
+    def __str__(self):
+        return self.comment
 

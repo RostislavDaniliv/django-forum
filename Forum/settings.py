@@ -2,9 +2,6 @@ import os
 from datetime import timedelta
 from pathlib import Path
 from django.conf import settings
-from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.hashers import check_password
-from django.contrib.auth.models import User
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '=2%cyb^t9m3tt=qb=4v2ej0ko70e*zp@0y12n3f2&s)o*g!lc6'
+SECRET_KEY = '1y@@$z5)is@f+q=kh$hm7$=8j42$-%53(t*&0h(f8^5^wdwit2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,6 +34,9 @@ INSTALLED_APPS = [
     'ckeditor',
     'djoser',
     'rest_framework.authtoken',
+    'oauth2_provider',
+    'social_django',
+    'rest_framework_social_oauth2',
 ]
 
 MIDDLEWARE = [
@@ -194,14 +194,35 @@ CKEDITOR_CONFIGS = {
     }
 }
 
+SOCIAL_AUTH_FACEBOOK_KEY = '368012070893584'
+SOCIAL_AUTH_FACEBOOK_SECRET = '1491410eb01286222b810f354d9f223a'
+
+
+AUTHENTICATION_BACKENDS = [
+    'social_core.backends.facebook.FacebookAppOAuth2',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
+}
+
+DJOSER = {
+    'PASSWORD_RESET_CONFIRM_URL': '#/password/reset/confirm/{uid}/{token}',
+    'USERNAME_RESET_CONFIRM_URL': '#/username/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '#/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': False,
+    'SERIALIZERS': {},
 }
 
 SIMPLE_JWT = {
