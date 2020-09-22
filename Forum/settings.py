@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'forum_db',
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'root',
-        'PASSWORD': '127896354a',
+        'PASSWORD': '',
         'HOST': 'localhost',
     }
 }
@@ -207,8 +207,8 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-SOCIAL_AUTH_FACEBOOK_KEY = '368012070893584'
-SOCIAL_AUTH_FACEBOOK_SECRET = '1491410eb01286222b810f354d9f223a'
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
 
 
 AUTHENTICATION_BACKENDS = [
