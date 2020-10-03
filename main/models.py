@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from rest_framework.authtoken.models import Token
 from django.dispatch import receiver
+from django.utils.text import Truncator
 from django.urls import reverse
 
 
@@ -62,7 +63,8 @@ class Topic(models.Model):
     slug = models.SlugField(max_length=500)
 
     def __str__(self):
-        return self.title
+        truncated_content = Truncator(self.content)
+        return truncated_content.chars(30)
 
 
 class Comment(models.Model):
