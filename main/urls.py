@@ -1,21 +1,8 @@
-from django.urls import path
-from . import views
-
+from .views import *
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls import url
 from django.urls import include, path
-from django.contrib import admin
 
-from .views import (
-    # UserCreateAPIView,
-    UserLoginAPIView,
-    UserLogoutAPIView,
-    UserDetailAPIView,
-    UserListAPIView,
-    UserDeleteAPIView,
-    UserUpdateAPIView
-)
 
 urlpatterns = [
     path('', UserListAPIView.as_view(), name='user-list'),
@@ -26,6 +13,10 @@ urlpatterns = [
     path('<slug:username>/edit/', UserUpdateAPIView.as_view(), name='user-update'),
     path('<slug:username>/delete/', UserDeleteAPIView.as_view(), name='user-delete'),
     path('api/', include('rest_framework.urls')),
+    path('create/', PostCreateAPIView.as_view(), name='post-create'),
+    path('<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),
+    path('<int:pk>/edit/', PostUpdateAPIView.as_view(), name='post-update'),
+    path('<int:pk>/delete/', PostDeleteAPIView.as_view(), name='post-delete'),
     # path('api/user/', include('main.urls')),
 ]
 

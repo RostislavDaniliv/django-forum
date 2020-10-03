@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'forum_db',
         'ENGINE': 'django.db.backends.mysql',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '127896354a',
         'HOST': 'localhost',
     }
 }

@@ -4,7 +4,11 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import authenticate
 from rest_framework.validators import UniqueValidator
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from django.utils.timezone import now
+from .models import Topic
 from main.models import UserProfile
+
+# USERS
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -280,6 +284,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
     )
     token = serializers.CharField(allow_blank=True, read_only=True)
     name = serializers.CharField(source='profile.name', read_only=True)
+
     class Meta:
         model = User
         fields = [
@@ -289,3 +294,116 @@ class UserLoginSerializer(serializers.ModelSerializer):
             'token',
         ]
         extra_kwargs = {"password": {"write_only": True} }
+
+
+# TOPIC
+
+class PostListSerializer(serializers.ModelSerializer):
+    thread = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='thread-detail'
+    )
+    creator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail',
+        lookup_field='username'
+    )
+
+    class Meta:
+        model = Topic
+        fields = "__all__"
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(allow_blank=False)
+    thread = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='thread-detail'
+    )
+    thread_id = serializers.IntegerField(
+        required=True,
+        help_text=_('Required. Id of the thread this post is created in')
+    )
+    creator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail',
+        lookup_field='username'
+    )
+
+    class Meta:
+        model = Topic
+        fields = "__all__"
+        read_only_fields=('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
+
+    def create(self, validated_data):
+        content = validated_data['content']
+        title = validated_data['title']
+        moderator = validated_data['moderator']
+        status = validated_data['status']
+        slug = validated_data['slug']
+        user = None
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            user = request.user
+        else:
+            raise serializers.ValidationError('Must be authenticated to create post')
+
+        # Create the topic
+        post = Topic(
+            title=title,
+            creator=user,
+            moderator=moderator,
+            content=content,
+            status=status,
+            slug=slug
+        )
+        # Update the thread last_activity to post creation time
+        post.save()
+        return post
+
+
+class PostUpdateSerializer(serializers.ModelSerializer):
+    content = serializers.CharField(required=True)
+    creator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail',
+        lookup_field='username'
+    )
+
+    class Meta:
+        model = Topic
+        fields = "__all__"
+        read_only_fields=('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
+
+    def update(self, instance, validated_data):
+        # Update fields if there is any change
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        # Update 'updated_at' field to now
+        setattr(instance, 'updated_at', now())
+
+        # Note: If user update post, it won't change the last_activity
+        instance.save()
+        return instance
+
+
+class PostDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = '__all__'
+
+
+class PostDetailSerializer(serializers.ModelSerializer):
+    thread = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='thread-detail'
+    )
+    creator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail',
+        lookup_field='username'
+    )
+
+    class Meta:
+        model = Topic
+        fields = '__all__'
