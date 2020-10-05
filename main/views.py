@@ -18,7 +18,8 @@ from .serializers import (
     UserTokenSerializer,
     UserDetailSerializer,
     UserListSerializer,
-    UserUpdateSerializer
+    UserUpdateSerializer,
+    CommentCreateSerializer
 )
 
 
@@ -164,3 +165,16 @@ class PostUpdateAPIView(generics.UpdateAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostUpdateSerializer
     permission_classes = [IsOwnerOrAdminOrReadOnly]
+
+
+# Comments
+
+
+class CommentCreateView(generics.CreateAPIView):
+    serializer_class = CommentCreateSerializer
+
+
+class ReviewDestroy(generics.DestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentCreateSerializer
+    permission_classes = [IsAuthenticated]

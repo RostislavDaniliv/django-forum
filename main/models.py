@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from rest_framework.authtoken.models import Token
 from django.dispatch import receiver
+from django.utils.timezone import now
 from django.utils.text import Truncator
 from django.urls import reverse
 
@@ -35,7 +36,7 @@ class UserProfile(models.Model):
     status = models.CharField(max_length=16, default='', blank=True)
 
     def __str__(self):
-        return self.user
+        return self.name
 
     @receiver(post_save, sender=User)
     def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -68,11 +69,13 @@ class Topic(models.Model):
 
 
 class Comment(models.Model):
-    comment = models.TextField(default='', null=True, blank=True)
-    commented_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commented_by")
-    topic = models.ForeignKey(Topic, default='', on_delete=models.CASCADE, related_name="topic_comments")
+    name = models.CharField(max_length=100, default='')
+    text = models.TextField(max_length=5000, default='')
+    parent = models.ForeignKey(
+        'self', on_delete=models.SET_NULL, blank=True, null=True, related_name="children"
+    )
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="reviews")
 
     def __str__(self):
-        return self.comment
-
+        return f"{self.name} - {self.topic}"
 

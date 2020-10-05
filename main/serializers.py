@@ -5,8 +5,7 @@ from django.contrib.auth import authenticate
 from rest_framework.validators import UniqueValidator
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.timezone import now
-from .models import Topic
-from main.models import UserProfile
+from .models import Topic, Comment, UserProfile
 
 # USERS
 
@@ -392,8 +391,41 @@ class PostDeleteSerializer(serializers.ModelSerializer):
         model = Topic
         fields = '__all__'
 
+# Coment ---
+
+
+class CommentCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = "__all__"
+
+
+class FilterCommentsListSerializer(serializers.ListSerializer):
+    def to_representation(self, data):
+        data = data.filter(parent=None)
+        return super().to_representation(data)
+
+
+class RecursiveSerializer(serializers.Serializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    children = RecursiveSerializer(many=True)
+
+    class Meta:
+        list_serializer_class = FilterCommentsListSerializer
+        model = Comment
+        fields = ("id", "name", "text", "children")
+
+# end comment
+
 
 class PostDetailSerializer(serializers.ModelSerializer):
+    reviews = CommentSerializer(many=True)
     thread = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='thread-detail'
@@ -407,3 +439,8 @@ class PostDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = '__all__'
+
+
+
+
+
