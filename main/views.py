@@ -6,7 +6,7 @@ from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticatedOrReadOnly,
 )
-from .permissions import IsOwnerOrAdminOrReadOnly
+from .permissions import IsOwnerOrAdminOrReadOnly, ModerOnly
 from rest_framework.authtoken.models import Token
 from .models import *
 
@@ -118,6 +118,7 @@ class PostListAPIView(generics.ListAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostListSerializer
     permission_classes = [IsAdminUser]
+    search_fields = ['title']
 
 
 class PostCreateAPIView(generics.CreateAPIView):
@@ -138,7 +139,7 @@ class PostDeleteAPIView(generics.DestroyAPIView):
     # because if user keep on deleting post doesn't make sense
     queryset = Topic.objects.all()
     serializer_class = PostDeleteSerializer
-    permission_classes = [IsOwnerOrAdminOrReadOnly]
+    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
 
     def delete(self, request, pk, format=None):
         try:
@@ -164,7 +165,7 @@ class PostDeleteAPIView(generics.DestroyAPIView):
 class PostUpdateAPIView(generics.UpdateAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostUpdateSerializer
-    permission_classes = [IsOwnerOrAdminOrReadOnly]
+    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
 
 
 # Comments
