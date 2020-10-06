@@ -6,7 +6,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', UserListAPIView.as_view(), name='user-list'),
-    # path('register/', UserCreateAPIView.as_view(), name='user-register'),
+    path('register/', UserCreateAPIView.as_view(), name='user-register'),
     path('user/login/', UserLoginAPIView.as_view(), name='user-login'),
     path('user/logout/', UserLogoutAPIView.as_view(), name='user-logout'),
     path('user/<slug:username>/', UserDetailAPIView.as_view(), name='user-detail'),
@@ -17,6 +17,10 @@ urlpatterns = [
     path('topic/<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),
     path('topic/<int:pk>/edit/', PostUpdateAPIView.as_view(), name='post-update'),
     path('topic/<int:pk>/delete/', PostDeleteAPIView.as_view(), name='post-delete'),
+    path('comment/create/', CommentCreateView.as_view(), name='comment-create'),
+    path('comment/<int:pk>/', CommentDetailAPIView.as_view(), name='comment-detail'),
+    path('comment/<int:pk>/edit/', CommentUpdateAPIView.as_view(), name='comment-update'),
+    path('comment/<int:pk>/delete/', CommentDelete.as_view(), name='comment-delete'),
     # path('api/user/', include('main.urls')),
 ]
 

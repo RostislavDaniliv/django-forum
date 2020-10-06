@@ -19,15 +19,18 @@ from .serializers import (
     UserDetailSerializer,
     UserListSerializer,
     UserUpdateSerializer,
-    CommentCreateSerializer
+    CommentCreateSerializer,
+    CommentUpdateSerializer,
+    CommentDetailSerializer,
+    UserCreateSerializer,
 )
 
 
-# class UserCreateAPIView(generics.CreateAPIView):
-#     serializer_class = UserCreateSerializer
-#     queryset = User.objects.all()
-#     permission_classes = [AllowAny]
-#     throttle_scope = 'create_user'
+class UserCreateAPIView(generics.CreateAPIView):
+    serializer_class = UserCreateSerializer
+    queryset = User.objects.all()
+    permission_classes = [AllowAny]
+    throttle_scope = 'create_user'
 
 
 class UserDetailAPIView(generics.RetrieveAPIView):
@@ -87,7 +90,6 @@ class UserLogoutAPIView(views.APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            # simply delete the token in server side
             request.user.auth_token.delete()
             return Response(status=HTTP_200_OK)
         except:
@@ -110,7 +112,8 @@ from .serializers import (
     PostCreateSerializer,
     PostDetailSerializer,
     PostUpdateSerializer,
-    PostDeleteSerializer
+    PostDeleteSerializer,
+    CommentDeleteSerializer
 )
 
 
@@ -133,10 +136,7 @@ class PostDetailAPIView(generics.RetrieveAPIView):
     serializer_class = PostDetailSerializer
     permission_classes = [AllowAny]
 
-
 class PostDeleteAPIView(generics.DestroyAPIView):
-    # For now only admin can delete post,
-    # because if user keep on deleting post doesn't make sense
     queryset = Topic.objects.all()
     serializer_class = PostDeleteSerializer
     permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
@@ -146,11 +146,7 @@ class PostDeleteAPIView(generics.DestroyAPIView):
             post = Topic.objects.get(pk=pk)
             thread = post.thread
             post.delete()
-
-            # since we deleted a post, we now check the latest post
             latest_post = Topic.objects.filter(thread=thread).order_by('-created_at').first()
-
-            # update the deleted post's thread last_activity
             if latest_post is None:
                 thread.last_activity = thread.created_at
             else:
@@ -175,7 +171,37 @@ class CommentCreateView(generics.CreateAPIView):
     serializer_class = CommentCreateSerializer
 
 
-class ReviewDestroy(generics.DestroyAPIView):
+class CommentDelete(generics.DestroyAPIView):
     queryset = Comment.objects.all()
-    serializer_class = CommentCreateSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = CommentDeleteSerializer
+    permission_classes = [IsAuthenticated, ModerOnly]
+
+    def delete(self, request, pk, format=None):
+        try:
+            comment = Comment.objects.get(pk=pk)
+            thread = comment.thread
+            comment.delete()
+
+            latest_comment = Comment.objects.filter(thread=thread).order_by('-created_at').first()
+
+            if latest_comment is None:
+                thread.last_activity = thread.created_at
+            else:
+                thread.last_activity = latest_comment.created_at
+            thread.save()
+            return Response(status=HTTP_200_OK)
+
+        except:
+            return Response(status=HTTP_400_BAD_REQUEST)
+
+
+class CommentUpdateAPIView(generics.UpdateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentUpdateSerializer
+    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
+
+
+class CommentDetailAPIView(generics.RetrieveAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentDetailSerializer
+    permission_classes = [AllowAny]

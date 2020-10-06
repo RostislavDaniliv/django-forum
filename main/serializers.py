@@ -163,87 +163,87 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
-# class UserCreateSerializer(serializers.ModelSerializer):
-#     username = serializers.SlugField(
-#         min_length=4,
-#         max_length=32,
-#         help_text=_(
-#             'Required. 4-32 characters. Letters, numbers, underscores or hyphens only.'
-#         ),
-#         validators=[UniqueValidator(
-#             queryset=User.objects.all(),
-#             message='has already been taken by other user'
-#         )],
-#         required=True
-#     )
-#     password = serializers.CharField(
-#         min_length=4,
-#         max_length=32,
-#         write_only=True,
-#         help_text=_(
-#             'Required. 4-32 characters.'
-#         ),
-#         required=True
-#     )
-#     email = serializers.EmailField(
-#         required=True,
-#         validators=[UniqueValidator(
-#             queryset=User.objects.all(),
-#             message='has already been taken by other user'
-#         )]
-#     )
-#     bio = serializers.CharField(source='profile.bio', allow_blank=True, default='')
-#     name = serializers.CharField(
-#         source='profile.name',
-#         allow_blank=True,
-#         default='',
-#         max_length=32
-#     )
-#     avatar = serializers.URLField(source='profile.avatar', allow_blank=True, default='')
-#     status = serializers.CharField(
-#     	source='profile.status',
-#     	allow_blank=True,
-#     	max_length=16,
-#         min_length=0,
-#         default=''
-#     )
-#
-#     class Meta:
-#         model = User
-#         fields = (
-#             'username',
-#             'name',
-#             'email',
-#             'password',
-#             'bio',
-#             'avatar',
-#             'status'
-#         )
-#
-#     def create(self, validated_data):
-#         profile_data = validated_data.pop('profile', None)
-#         username = validated_data['username']
-#         email = validated_data['email']
-#         password = validated_data['password']
-#         user = User(
-#                 username = username,
-#                 email = email
-#         )
-#         user.set_password(password)
-#         user.save()
-#
-#         avatar = profile_data.get('avatar') or None
-#         if not avatar:
-#             avatar = 'https://api.adorable.io/avatar/200/' + username
-#         profile = UserProfile(
-#             user = user,
-#             bio = profile_data.get('bio', ''),
-#             avatar = avatar,
-#             name = profile_data.get('name', ''),
-#             status = profile_data.get('status', 'Member')
-#         )
-#         profile.save()
-#         return user
+class UserCreateSerializer(serializers.ModelSerializer):
+    username = serializers.SlugField(
+        min_length=4,
+        max_length=32,
+        help_text=_(
+            'Required. 4-32 characters. Letters, numbers, underscores or hyphens only.'
+        ),
+        validators=[UniqueValidator(
+            queryset=User.objects.all(),
+            message='has already been taken by other user'
+        )],
+        required=True
+    )
+    password = serializers.CharField(
+        min_length=4,
+        max_length=32,
+        write_only=True,
+        help_text=_(
+            'Required. 4-32 characters.'
+        ),
+        required=True
+    )
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(
+            queryset=User.objects.all(),
+            message='has already been taken by other user'
+        )]
+    )
+    bio = serializers.CharField(source='profile.bio', allow_blank=True, default='')
+    name = serializers.CharField(
+        source='profile.name',
+        allow_blank=True,
+        default='',
+        max_length=32
+    )
+    avatar = serializers.URLField(source='profile.avatar', allow_blank=True, default='')
+    status = serializers.CharField(
+    	source='profile.status',
+    	allow_blank=True,
+    	max_length=16,
+        min_length=0,
+        default=''
+    )
+
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'name',
+            'email',
+            'password',
+            'bio',
+            'avatar',
+            'status'
+        )
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile', None)
+        username = validated_data['username']
+        email = validated_data['email']
+        password = validated_data['password']
+        user = User(
+                username = username,
+                email = email
+        )
+        user.set_password(password)
+        user.save()
+
+        avatar = profile_data.get('avatar') or None
+        if not avatar:
+            avatar = 'https://api.adorable.io/avatar/200/' + username
+        profile = UserProfile(
+            user = user,
+            bio = profile_data.get('bio', ''),
+            avatar = avatar,
+            name = profile_data.get('name', ''),
+            status = profile_data.get('status', 'Member')
+        )
+        profile.save()
+        return user
 
 
 class UserTokenSerializer(serializers.Serializer):
@@ -346,8 +346,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
             user = request.user
         else:
             raise serializers.ValidationError('Must be authenticated to create post')
-
-        # Create the topic
         post = Topic(
             title=title,
             creator=user,
@@ -356,7 +354,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
             status=status,
             slug=slug
         )
-        # Update the thread last_activity to post creation time
         post.save()
         return post
 
@@ -375,13 +372,9 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         read_only_fields=('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
 
     def update(self, instance, validated_data):
-        # Update fields if there is any change
         for field, value in validated_data.items():
             setattr(instance, field, value)
-        # Update 'updated_at' field to now
         setattr(instance, 'updated_at', now())
-
-        # Note: If user update post, it won't change the last_activity
         instance.save()
         return instance
 
@@ -390,6 +383,13 @@ class PostDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = '__all__'
+
+
+class CommentDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
 
 # Coment ---
 
@@ -441,6 +441,31 @@ class PostDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CommentDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+
+class CommentUpdateSerializer(serializers.ModelSerializer):
+    text = serializers.CharField(required=True)
+    creator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail',
+        lookup_field='username'
+    )
+
+    class Meta:
+        model = Topic
+        fields = "__all__"
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        setattr(instance, 'updated_at', now())
+
+        instance.save()
+        return instance
 
 
 
