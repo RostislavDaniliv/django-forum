@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from rest_framework.permissions import BasePermission
+from .models import Profile
 
 
 class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
@@ -16,10 +17,14 @@ class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
 
 class ModerOnly(BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and (
-            hasattr(request.user, "employee")
+        return request.user.is_authenticated and (hasattr(request.user, "employee")
             or (
                 hasattr(request.user, "member")
-                and request.user.member.is_moderator
+                and request.user.profile.is_moderator
             )
         )
+
+
+class IsNotBanned(BasePermission):
+    def has_permission(self, request, view):
+        return not request.user.profile.is_ban

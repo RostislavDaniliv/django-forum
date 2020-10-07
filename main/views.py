@@ -1,3 +1,5 @@
+from lib2to3.fixes.fix_input import context
+
 from django.contrib.auth import get_user_model
 from rest_framework import generics, views
 from rest_framework.permissions import (
@@ -6,14 +8,13 @@ from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticatedOrReadOnly,
 )
-from .permissions import IsOwnerOrAdminOrReadOnly, ModerOnly
+from .permissions import IsOwnerOrAdminOrReadOnly, ModerOnly, IsNotBanned
 from rest_framework.authtoken.models import Token
 from .models import *
 
 User = get_user_model()
 
 from .serializers import (
-    # UserCreateSerializer,
     UserLoginSerializer,
     UserTokenSerializer,
     UserDetailSerializer,
@@ -74,15 +75,15 @@ class UserLoginAPIView(views.APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data['user']
             token, created = Token.objects.get_or_create(user=user)
-            return Response({
-                'token': token.key,
-                'username': user.username,
-                'name': user.profile.name,
-                'avatar': user.profile.avatar,
-                'is_staff': user.is_staff
-            }, status=HTTP_200_OK)
+            # return Response({
+            #     'token': token.key,
+            #     'username': user.username,
+            #     'name': user.profile.name,
+            #     'avatar': user.profile.avatar,
+            #     'is_staff': user.is_staff
+            # }, status=HTTP_200_OK)
 
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class UserLogoutAPIView(views.APIView):
@@ -134,7 +135,7 @@ class PostCreateAPIView(generics.CreateAPIView):
 class PostDetailAPIView(generics.RetrieveAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostDetailSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsNotBanned]
 
 class PostDeleteAPIView(generics.DestroyAPIView):
     queryset = Topic.objects.all()

@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 from rest_framework.validators import UniqueValidator
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils.timezone import now
-from .models import Topic, Comment, UserProfile
+from .models import Topic, Comment, Profile
 
 # USERS
 
@@ -13,20 +13,7 @@ from .models import Topic, Comment, UserProfile
 class UserDetailSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio')
     avatar = serializers.URLField(source='profile.avatar')
-    status = serializers.URLField(source='profile.status')
     name = serializers.CharField(source='profile.name')
-    threads = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='thread-detail',
-        lookup_field='pk'
-    )
-    posts = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='post-detail',
-        lookup_field='pk'
-    )
     date_joined = serializers.SerializerMethodField()
 
     class Meta:
@@ -36,11 +23,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'name',
             'bio',
             'avatar',
-            'status',
             'is_staff',
             'date_joined',
-            'threads',
-            'posts'
         ]
         lookup_field = 'username'
 
@@ -51,7 +35,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
 class UserListSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio')
     avatar = serializers.URLField(source='profile.avatar')
-    status = serializers.URLField(source='profile.status')
     name = serializers.CharField(source='profile.name')
 
 
@@ -62,7 +45,6 @@ class UserListSerializer(serializers.ModelSerializer):
             'name',
             'bio',
             'avatar',
-            'status',
             'is_staff',
             'date_joined'
         ]
@@ -235,12 +217,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
         avatar = profile_data.get('avatar') or None
         if not avatar:
             avatar = 'https://api.adorable.io/avatar/200/' + username
-        profile = UserProfile(
+        profile = Profile(
             user = user,
             bio = profile_data.get('bio', ''),
             avatar = avatar,
             name = profile_data.get('name', ''),
-            status = profile_data.get('status', 'Member')
         )
         profile.save()
         return user
@@ -283,6 +264,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
     )
     token = serializers.CharField(allow_blank=True, read_only=True)
     name = serializers.CharField(source='profile.name', read_only=True)
+    password = serializers.CharField(max_length=128, write_only=True)
 
     class Meta:
         model = User
@@ -292,7 +274,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
             'password',
             'token',
         ]
-        extra_kwargs = {"password": {"write_only": True} }
+        extra_kwargs = {"password": {"write_only": True}}
 
 
 # TOPIC
