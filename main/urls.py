@@ -19,6 +19,7 @@ urlpatterns = [
     path('topic/<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),
     path('topic/<int:pk>/edit/', PostUpdateAPIView.as_view(), name='post-update'),
     path('topic/<int:pk>/delete/', PostDeleteAPIView.as_view(), name='post-delete'),
+    path('topic/<int:pk>/set_moder/', SetModerInTopicAPIView.as_view(), name='post-set_moder'),
     path('comment/create/', CommentCreateView.as_view(), name='comment-create'),
     path('comment/<int:pk>/', CommentDetailAPIView.as_view(), name='comment-detail'),
     path('comment/<int:pk>/edit/', CommentUpdateAPIView.as_view(), name='comment-update'),

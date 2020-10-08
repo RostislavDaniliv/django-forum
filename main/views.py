@@ -8,7 +8,7 @@ from rest_framework.permissions import (
     IsAdminUser,
     IsAuthenticatedOrReadOnly,
 )
-from .permissions import IsOwnerOrAdminOrReadOnly, ModerOnly, IsNotBanned
+from .permissions import IsOwnerOrAdminOrReadOnly, ModerOnly, IsNotBanned, IsNotMuted, IsModerHaveTopic
 from rest_framework.authtoken.models import Token
 from .models import *
 
@@ -32,6 +32,7 @@ from .serializers import (
     CommentDeleteSerializer,
     GetBanSerializer,
     GetModerSerializer,
+    SetModerInTopicSerializer,
 )
 
 
@@ -127,7 +128,7 @@ class PostListAPIView(generics.ListAPIView):
 class PostCreateAPIView(generics.CreateAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostCreateSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsNotMuted, IsNotBanned]
     throttle_scope = 'create_post'
 
 
@@ -136,10 +137,11 @@ class PostDetailAPIView(generics.RetrieveAPIView):
     serializer_class = PostDetailSerializer
     permission_classes = [IsAuthenticated, IsNotBanned]
 
+
 class PostDeleteAPIView(generics.DestroyAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostDeleteSerializer
-    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
+    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly, IsNotBanned, IsModerHaveTopic]
 
     def delete(self, request, pk, format=None):
         try:
@@ -161,7 +163,7 @@ class PostDeleteAPIView(generics.DestroyAPIView):
 class PostUpdateAPIView(generics.UpdateAPIView):
     queryset = Topic.objects.all()
     serializer_class = PostUpdateSerializer
-    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
+    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly, IsNotBanned, IsNotMuted, IsModerHaveTopic]
 
 
 class GetBanAPIView(generics.UpdateAPIView):
@@ -175,17 +177,24 @@ class SetModerAPIView(generics.UpdateAPIView):
     serializer_class = GetModerSerializer
     permission_classes = [IsAdminUser]
 
+
+class SetModerInTopicAPIView(generics.UpdateAPIView):
+    queryset = Topic.objects.all()
+    serializer_class = SetModerInTopicSerializer
+    permission_classes = [AllowAny]
+
 # Comments
 
 
 class CommentCreateView(generics.CreateAPIView):
     serializer_class = CommentCreateSerializer
+    permission_classes = [IsAuthenticated, IsNotBanned, IsNotMuted]
 
 
 class CommentDelete(generics.DestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentDeleteSerializer
-    permission_classes = [IsAuthenticated, ModerOnly]
+    permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
 
     def delete(self, request, pk, format=None):
         try:

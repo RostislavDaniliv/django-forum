@@ -12,7 +12,7 @@ class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
         if request.user and request.user.is_staff:
             return True
 
-        return obj == request.user
+        return
 
 
 class ModerOnly(BasePermission):
@@ -20,7 +20,16 @@ class ModerOnly(BasePermission):
         return request.user.profile.is_moderator
 
 
-
 class IsNotBanned(BasePermission):
     def has_permission(self, request, view):
         return not request.user.profile.is_ban
+
+
+class IsNotMuted(BasePermission):
+    def has_permission(self, request, view):
+        return not request.user.profile.is_mute
+
+
+class IsModerHaveTopic(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        return obj.moderator == request.user

@@ -410,6 +410,27 @@ class GetModerSerializer(serializers.ModelSerializer):
         return instance
 
 
+class SetModerInTopicSerializer(serializers.ModelSerializer):
+    moderator = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='user-detail',
+        lookup_field='username'
+    )
+
+    class Meta:
+        model = Topic
+        fields = ['moderator']
+        read_only_fields=('moderator',)
+        lookup_field = 'username'
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        setattr(instance, 'updated_at', now())
+        instance.save()
+        return instance
+
+
 class PostDeleteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic

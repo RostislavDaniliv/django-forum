@@ -8,23 +8,6 @@ from django.utils.timezone import now
 from django.utils.text import Truncator
 from django.urls import reverse
 
-
-Status = (
-    ('Draft', 'Draft'),
-    ('Published', 'Published'),
-    ('Close', 'Close'),
-    ('Banned', 'Banned'),
-)
-
-USER_ROLES = (
-    ('Admin', 'Admin'),
-    ('Moderator', 'Moderator'),
-    ('User', 'User'),
-    ('Visitor', 'Visitor'),
-    ('Banned', 'Banned'),
-    ('Muted', 'Muted'),
-)
-
 User = settings.AUTH_USER_MODEL
 
 
@@ -55,7 +38,6 @@ class Topic(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="topic_creator")
     content = models.TextField()
     moderator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="topic_moderator")
-    status = models.CharField(choices=Status, max_length=20)
     slug = models.SlugField(max_length=500)
 
     def __str__(self):
@@ -67,9 +49,9 @@ class Comment(models.Model):
     name = models.CharField(max_length=100, default='')
     text = models.TextField(max_length=5000, default='')
     parent = models.ForeignKey(
-        'self', on_delete=models.SET_NULL, blank=True, null=True, related_name="children"
+'self', on_delete=models.SET_NULL, blank=True, null=True, related_name="children"
     )
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name="reviews")
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, default=None, related_name="reviews")
 
     def __str__(self):
         return f"{self.name} - {self.topic}"
