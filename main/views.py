@@ -24,6 +24,14 @@ from .serializers import (
     CommentUpdateSerializer,
     CommentDetailSerializer,
     UserCreateSerializer,
+    PostListSerializer,
+    PostCreateSerializer,
+    PostDetailSerializer,
+    PostUpdateSerializer,
+    PostDeleteSerializer,
+    CommentDeleteSerializer,
+    GetBanSerializer,
+    GetModerSerializer,
 )
 
 
@@ -108,15 +116,6 @@ from .permissions import IsOwnerOrAdminOrReadOnly
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
 
-from .serializers import (
-    PostListSerializer,
-    PostCreateSerializer,
-    PostDetailSerializer,
-    PostUpdateSerializer,
-    PostDeleteSerializer,
-    CommentDeleteSerializer
-)
-
 
 class PostListAPIView(generics.ListAPIView):
     queryset = Topic.objects.all()
@@ -164,6 +163,17 @@ class PostUpdateAPIView(generics.UpdateAPIView):
     serializer_class = PostUpdateSerializer
     permission_classes = [IsOwnerOrAdminOrReadOnly, ModerOnly]
 
+
+class GetBanAPIView(generics.UpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = GetBanSerializer
+    permission_classes = [ModerOnly, IsAdminUser]
+
+
+class SetModerAPIView(generics.UpdateAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = GetModerSerializer
+    permission_classes = [IsAdminUser]
 
 # Comments
 

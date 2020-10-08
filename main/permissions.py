@@ -17,12 +17,8 @@ class IsOwnerOrAdminOrReadOnly(permissions.BasePermission):
 
 class ModerOnly(BasePermission):
     def has_permission(self, request, view):
-        return request.user.is_authenticated and (hasattr(request.user, "employee")
-            or (
-                hasattr(request.user, "member")
-                and request.user.profile.is_moderator
-            )
-        )
+        return request.user.profile.is_moderator
+
 
 
 class IsNotBanned(BasePermission):

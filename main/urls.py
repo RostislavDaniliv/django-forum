@@ -12,6 +12,8 @@ urlpatterns = [
     path('user/<slug:username>/', UserDetailAPIView.as_view(), name='user-detail'),
     path('user/<slug:username>/edit/', UserUpdateAPIView.as_view(), name='user-update'),
     path('user/<slug:username>/delete/', UserDeleteAPIView.as_view(), name='user-delete'),
+    path('user/<int:pk>/ban/', GetBanAPIView.as_view(), name='user-ban'),
+    path('user/<int:pk>/moder/', SetModerAPIView.as_view(), name='user-moder'),
     path('api/', include('rest_framework.urls')),
     path('topic/create/', PostCreateAPIView.as_view(), name='post-create'),
     path('topic/<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),

@@ -19,6 +19,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            'id',
             'username',
             'name',
             'bio',
@@ -352,6 +353,54 @@ class PostUpdateSerializer(serializers.ModelSerializer):
         model = Topic
         fields = "__all__"
         read_only_fields=('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        setattr(instance, 'updated_at', now())
+        instance.save()
+        return instance
+
+
+class PostDeleteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = '__all__'
+
+
+class GetBanSerializer(serializers.ModelSerializer):
+    is_ban = serializers.BooleanField(default=False)
+
+    class Meta:
+        model = Profile
+        fields = ['is_ban']
+        read_only_fields=('is_ban',)
+        lookup_field = 'username'
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', None)
+        profile = instance.profile
+        for field, value in profile_data.items():
+            if value:
+                setattr(profile, field, value)
+
+        for field, value in validated_data.items():
+            if value:
+                setattr(instance, field, value)
+
+        profile.save()
+        instance.save()
+        return instance
+
+
+class GetModerSerializer(serializers.ModelSerializer):
+    is_moderator = serializers.BooleanField(default=False)
+
+    class Meta:
+        model = Profile
+        fields = ['is_moderator']
+        read_only_fields=('is_moderator',)
+        lookup_field = 'username'
 
     def update(self, instance, validated_data):
         for field, value in validated_data.items():
