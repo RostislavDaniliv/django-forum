@@ -12,12 +12,14 @@ class UserDetailSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio')
     avatar = serializers.URLField(source='profile.avatar')
     name = serializers.CharField(source='profile.name')
+    user = serializers.CharField(source='profile.profile')
     date_joined = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id',
+            'user',
             'username',
             'name',
             'bio',
@@ -35,7 +37,6 @@ class UserListSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio')
     avatar = serializers.URLField(source='profile.avatar')
     name = serializers.CharField(source='profile.name')
-
 
     class Meta:
         model = User
@@ -121,14 +122,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         if not user:
             msg = _('Sorry, the password you entered is incorrect.')
             raise serializers.ValidationError(msg, code='authorization')
-
-
         new_password = validated_data.get('new_password') or None
         if new_password:
             instance.set_password(new_password)
         validated_data.pop('new_password', None)
-
-
         profile_data = validated_data.pop('profile', None)
         profile = instance.profile
         for field, value in profile_data.items():
