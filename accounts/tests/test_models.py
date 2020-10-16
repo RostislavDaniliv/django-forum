@@ -18,8 +18,6 @@ class ProfileModelTest(TestCase):
             is_moderator='False',
             is_ban='False',
             is_mute='False',
-            # auth_user_id='1',
-            # user='TestName',
             )
 
     def test_name_label(self):

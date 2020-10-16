@@ -9,15 +9,13 @@ from rest_framework.permissions import (
 from .permissions import IsOwnerOrAdminOrReadOnly
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.response import Response
-
-User = get_user_model()
-
 from .serializers import (
     CommentCreateSerializer,
     CommentUpdateSerializer,
     CommentDetailSerializer,
     CommentDeleteSerializer,
 )
+User = get_user_model()
 
 
 class CommentCreateView(generics.CreateAPIView):
@@ -44,7 +42,6 @@ class CommentDelete(generics.DestroyAPIView):
                 thread.last_activity = latest_comment.created_at
             thread.save()
             return Response(status=HTTP_200_OK)
-
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
 
