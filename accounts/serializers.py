@@ -177,14 +177,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
         default='',
         max_length=32
     )
-    avatar = serializers.URLField(source='profile.avatar', allow_blank=True, default='')
-    status = serializers.CharField(
-    	source='profile.status',
-    	allow_blank=True,
-    	max_length=16,
-        min_length=0,
-        default=''
-    )
+    avatar = serializers.ImageField(source='profile.avatar', default='')
 
     class Meta:
         model = User
@@ -195,31 +188,18 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'password',
             'bio',
             'avatar',
-            'status'
         )
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile', None)
         username = validated_data['username']
         email = validated_data['email']
         password = validated_data['password']
         user = User(
-                username = username,
-                email = email
+                username=username,
+                email=email
         )
         user.set_password(password)
         user.save()
-
-        avatar = profile_data.get('avatar') or None
-        if not avatar:
-            avatar = 'https://api.adorable.io/avatar/200/' + username
-        profile = Profile(
-            user = user,
-            bio = profile_data.get('bio', ''),
-            avatar = avatar,
-            name = profile_data.get('name', ''),
-        )
-        profile.save()
         return user
 
 

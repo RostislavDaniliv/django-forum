@@ -5,14 +5,14 @@ from django.urls import include, path
 
 urlpatterns = [
     path('list/', UserListAPIView.as_view(), name='userList'),
-    path('register/', UserCreateAPIView.as_view(), name='user-register'),
-    path('login/', UserLoginAPIView.as_view(), name='user-login'),
-    path('logout/', UserLogoutAPIView.as_view(), name='user-logout'),
-    path('<slug:username>/', UserDetailAPIView.as_view(), name='user-detail'),
-    path('<slug:username>/edit/', UserUpdateAPIView.as_view(), name='user-update'),
-    path('<slug:username>/delete/', UserDeleteAPIView.as_view(), name='user-delete'),
-    path('<int:pk>/ban/', GetBanAPIView.as_view(), name='user-ban'),
-    path('<int:pk>/moder/', SetModerAPIView.as_view(), name='user-moder'),
+    path('register/', UserCreateAPIView.as_view(), name='userRegister'),
+    path('login/', UserLoginAPIView.as_view(), name='userLogin'),
+    path('logout/', UserLogoutAPIView.as_view(), name='userLogout'),
+    path('<slug:username>/', UserDetailAPIView.as_view(), name='userDetail'),
+    path('<slug:username>/edit/', UserUpdateAPIView.as_view(), name='userUpdate'),
+    path('<slug:username>/delete/', UserDeleteAPIView.as_view(), name='userDelete'),
+    path('<int:pk>/ban/', GetBanAPIView.as_view(), name='userBan'),
+    path('<int:pk>/moder/', SetModerAPIView.as_view(), name='userModer'),
 ]
 
 if settings.DEBUG:

@@ -74,13 +74,12 @@ class UserLoginAPIView(views.APIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.validated_data['user']
             token, created = Token.objects.get_or_create(user=user)
-            # return Response({
-            #     'token': token.key,
-            #     'username': user.username,
-            #     'name': user.profile.name,
-            #     'avatar': user.profile.avatar,
-            #     'is_staff': user.is_staff
-            # }, status=HTTP_200_OK)
+            return Response({
+                'token': token.key,
+                'username': user.username,
+                'name': user.profile.name,
+                'is_staff': user.is_staff
+            }, status=HTTP_200_OK)
 
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
