@@ -48,3 +48,39 @@ class UserListViewTest(TestCase):
         self.assertEqual(len(response.data), 5)
 
 
+class UserDeleteViewTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(
+            username='TestDelete',
+            is_staff='True',
+        )
+
+    def test_lists_users(self):
+        user = User.objects.get(username='TestDelete')
+        response = self.client.delete(reverse('userDelete', args=(user.username,)))
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.status_text, 'No Content')
+
+
+class UserUpdateViewTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create(
+            username='TestUpdate',
+        )
+
+    def test_update_users(self):
+        user = User.objects.get(username='TestUpdate')
+        response = self.client.put(reverse('userUpdate', args=(user.username,),),
+                                   data={
+                                       'name': 'EditName',
+                                       'email': 'edit@mail.com',
+                                       'bio': 'EditBio',
+
+
+                                          })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_text, 'No Content')
