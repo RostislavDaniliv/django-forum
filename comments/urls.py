@@ -4,10 +4,10 @@ from django.conf.urls.static import static
 from django.urls import include, path
 
 urlpatterns = [
-    path('create/', CommentCreateView.as_view(), name='comment-create'),
-    path('<int:pk>/', CommentDetailAPIView.as_view(), name='comment-detail'),
-    path('<int:pk>/edit/', CommentUpdateAPIView.as_view(), name='comment-update'),
-    path('<int:pk>/delete/', CommentDelete.as_view(), name='comment-delete'),
+    path('create/', CommentCreateView.as_view(), name='commentCreate'),
+    path('<int:pk>/', CommentDetailAPIView.as_view(), name='commentDetail'),
+    path('<int:pk>/edit/', CommentUpdateAPIView.as_view(), name='commentUpdate'),
+    path('<int:pk>/delete/', CommentDelete.as_view(), name='commentDelete'),
 ]
 
 if settings.DEBUG:

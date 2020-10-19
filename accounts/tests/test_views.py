@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
+
 from accounts.models import Profile
 
 
@@ -74,13 +75,13 @@ class UserUpdateViewTest(TestCase):
 
     def test_update_users(self):
         user = User.objects.get(username='TestUpdate')
-        response = self.client.put(reverse('userUpdate', args=(user.username,),),
-                                   data={
-                                       'name': 'EditName',
-                                       'email': 'edit@mail.com',
-                                       'bio': 'EditBio',
-
-
-                                          })
+        response = self.client.put(reverse('userUpdate', args=(user.username,)), data={
+                'name': 'EditName',
+                'email': 'edit@mail.com',
+                'bio': 'EditBio',
+            }
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.status_text, 'No Content')
+        self.assertEqual(response.data['name'], 'EditName')
+        self.assertEqual(response.data['email'], 'edit@mail.com')
+        self.assertEqual(response.data['bio'], 'EditBio')

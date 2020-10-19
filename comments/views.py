@@ -20,7 +20,7 @@ User = get_user_model()
 
 class CommentCreateView(generics.CreateAPIView):
     serializer_class = CommentCreateSerializer
-    permission_classes = [IsAuthenticated, IsNotBanned, IsNotMuted]
+    permission_classes = [AllowAny, IsNotBanned, IsNotMuted]
 
 
 class CommentDelete(generics.DestroyAPIView):

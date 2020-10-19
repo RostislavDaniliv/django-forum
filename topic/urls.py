@@ -4,11 +4,11 @@ from django.conf.urls.static import static
 from django.urls import path
 
 urlpatterns = [
-    path('create/', PostCreateAPIView.as_view(), name='post-create'),
-    path('<int:pk>/', PostDetailAPIView.as_view(), name='post-detail'),
-    path('<int:pk>/edit/', PostUpdateAPIView.as_view(), name='post-update'),
-    path('<int:pk>/delete/', PostDeleteAPIView.as_view(), name='post-delete'),
-    path('<int:pk>/set_moder/', SetModerInTopicAPIView.as_view(), name='post-set_moder'),
+    path('create/', PostCreateAPIView.as_view(), name='postCreate'),
+    path('<int:pk>/', PostDetailAPIView.as_view(), name='postDetail'),
+    path('<int:pk>/edit/', PostUpdateAPIView.as_view(), name='postUpdate'),
+    path('<int:pk>/delete/', PostDeleteAPIView.as_view(), name='postDelete'),
+    path('<int:pk>/set_moder/', SetModerInTopicAPIView.as_view(), name='postSet_moder'),
 ]
 
 if settings.DEBUG:

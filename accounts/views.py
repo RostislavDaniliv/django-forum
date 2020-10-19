@@ -44,21 +44,21 @@ class UserDeleteAPIView(generics.DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
     lookup_field = 'username'
-    permission_classes = [AllowAny]
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserUpdateSerializer
     lookup_field = 'username'
-    permission_classes = [AllowAny]
+    permission_classes = [IsOwnerOrAdminOrReadOnly]
     throttle_scope = 'edit_user'
 
 
 class UserListAPIView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserListSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminUser]
 
 
 class UserLoginAPIView(views.APIView):

@@ -40,7 +40,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = "__all__"
-        read_only_fields=('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
+        read_only_fields = ('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
 
     def create(self, validated_data):
         content = validated_data['content']
@@ -77,7 +77,7 @@ class PostUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
         fields = "__all__"
-        read_only_fields=('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
+        read_only_fields = ('id', 'title', 'creator', 'content', 'moderator', 'status', 'slug',)
 
     def update(self, instance, validated_data):
         for field, value in validated_data.items():

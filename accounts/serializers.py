@@ -85,7 +85,6 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         except:
             msg = _('Must be authenticated')
             raise serializers.ValidationError(msg, code='authorization')
-
         profile_data = validated_data.pop('profile', None)
         profile = instance.profile
         for field, value in profile_data.items():
@@ -244,7 +243,7 @@ class GetModerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ['is_moderator']
-        read_only_fields=('is_moderator',)
+        read_only_fields = ('is_moderator',)
         lookup_field = 'username'
 
     def update(self, instance, validated_data):

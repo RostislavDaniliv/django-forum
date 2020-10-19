@@ -10,10 +10,39 @@ class CommentDeleteSerializer(serializers.ModelSerializer):
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(allow_blank=False)
+    text = serializers.CharField(allow_blank=False)
+    parent = serializers.HyperlinkedRelatedField(read_only=True,
+        view_name='CommentDetail',
+        lookup_field='comment_id')
+    topic = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='TopicDetail',
+        lookup_field='topic_id'
+    )
 
     class Meta:
         model = Comment
         fields = "__all__"
+
+    def create(self, validated_data):
+        name = validated_data['name']
+        text = validated_data['text']
+        topic = None
+        parent = None
+        request = self.context.get("request")
+        if request and hasattr(request, "parent"):
+            parent = request.comment
+        if request and hasattr(request, "topic"):
+            topic = request.topic
+        comm = Comment(
+            name=name,
+            text=text,
+            parent=parent,
+            topic=topic,
+        )
+        comm.save()
+        return comm
 
 
 class FilterCommentsListSerializer(serializers.ListSerializer):
