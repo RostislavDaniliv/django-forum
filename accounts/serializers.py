@@ -7,6 +7,8 @@ from rest_framework.validators import UniqueValidator
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from .models import Profile
 
+# Serializer for detailed output of user information
+
 
 class UserDetailSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio')
@@ -33,6 +35,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
         return naturaltime(obj.date_joined)
 
 
+# Serializer for displaying the list of users
+
+
 class UserListSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(source='profile.bio')
     avatar = serializers.URLField(source='profile.avatar')
@@ -48,6 +53,9 @@ class UserListSerializer(serializers.ModelSerializer):
             'is_staff',
             'date_joined'
         ]
+
+
+# Serializer to update user information
 
 
 class UserUpdateSerializer(serializers.ModelSerializer):
@@ -98,6 +106,9 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         profile.save()
         instance.save()
         return instance
+
+
+# Serializer to create a user and profile
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -161,6 +172,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+# Serializer for assigning a token to a user
+
 
 class UserTokenSerializer(serializers.Serializer):
     username = serializers.CharField(label=_("Username"))
@@ -189,6 +202,9 @@ class UserTokenSerializer(serializers.Serializer):
         return attrs
 
 
+# Serializer for user authorization
+
+
 class UserLoginSerializer(serializers.ModelSerializer):
     username = serializers.SlugField(
         max_length=32,
@@ -210,6 +226,9 @@ class UserLoginSerializer(serializers.ModelSerializer):
             'token',
         ]
         extra_kwargs = {"password": {"write_only": True}}
+
+
+# Serializer for issuing a ban to the user
 
 
 class GetBanSerializer(serializers.ModelSerializer):
@@ -235,6 +254,9 @@ class GetBanSerializer(serializers.ModelSerializer):
         profile.save()
         instance.save()
         return instance
+
+
+# Serializer for issuing moderator rights to the user
 
 
 class GetModerSerializer(serializers.ModelSerializer):

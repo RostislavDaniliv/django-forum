@@ -11,6 +11,6 @@ urlpatterns = [
     path('<int:pk>/set_moder/', SetModerInTopicAPIView.as_view(), name='postSet_moder'),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG:  
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

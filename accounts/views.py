@@ -25,12 +25,16 @@ from .serializers import (
     GetModerSerializer,
 )
 
+# View class to create user
+
 
 class UserCreateAPIView(generics.CreateAPIView):
     serializer_class = UserCreateSerializer
     queryset = User.objects.all()
     permission_classes = [AllowAny]
     throttle_scope = 'create_user'
+
+# View class for detailed user information
 
 
 class UserDetailAPIView(generics.RetrieveAPIView):
@@ -39,12 +43,16 @@ class UserDetailAPIView(generics.RetrieveAPIView):
     lookup_field = 'username'
     permission_classes = [AllowAny]
 
+# View class to remove user
+
 
 class UserDeleteAPIView(generics.DestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
     lookup_field = 'username'
     permission_classes = [IsOwnerOrAdminOrReadOnly]
+
+# View class to update user information
 
 
 class UserUpdateAPIView(generics.UpdateAPIView):
@@ -54,11 +62,15 @@ class UserUpdateAPIView(generics.UpdateAPIView):
     permission_classes = [IsOwnerOrAdminOrReadOnly]
     throttle_scope = 'edit_user'
 
+# View class to get a list of users
+
 
 class UserListAPIView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserListSerializer
     permission_classes = [IsAdminUser]
+
+# View class for user authorization
 
 
 class UserLoginAPIView(views.APIView):
@@ -84,6 +96,8 @@ class UserLoginAPIView(views.APIView):
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
+# View class for logout user
+
 class UserLogoutAPIView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -94,11 +108,15 @@ class UserLogoutAPIView(views.APIView):
         except:
             return Response(status=HTTP_400_BAD_REQUEST)
 
+# View the class to issue a ban to the user
+
 
 class GetBanAPIView(generics.UpdateAPIView):
     queryset = Profile.objects.all()
     serializer_class = GetBanSerializer
     permission_classes = [ModerOnly, IsAdminUser]
+
+# View the class for issuing moderator rights to the user
 
 
 class SetModerAPIView(generics.UpdateAPIView):
